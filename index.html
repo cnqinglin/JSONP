@@ -1,5 +1,5 @@
 <title>首页</title>
-
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <link rel="stylesheet" href="./style.css">
 <!---用占位符表示动态数据--->
 <h5>您的账账户余额是 <span id="amount">&&&amount&&&</span></h5>
@@ -7,49 +7,22 @@
 
 
 <script>
-    //不能用get请求，别人很容易伪造，必须用post请求
-    button.addEventListener('click', (e) => {
-        //用动态script创建一个GET请求法
-        let script = document.createElement('script')
-        //得到一个形如frank24325435的函数名
-        let functionName = 'frank' + parseInt(Math.reandom() * 100000,
-            10) //Math.random是小数 ，乘一个100000后得到一个0-10万的小数，再取整
-        window[functionName] = function (result) {
-            if (result === 'success') {
-                amount.innerText = amount.innerText - 1
-            } else {
+    button.addEventListener('click', function () {
+        // Using YQL and JSONP
+        //虽然名字是ajax，但是和AJAX没有任何关系
+        $.ajax({
+            url: "http://jack.com:8082/pay",
+            // Tell jQuery we're expecting JSONP
+            dataType: "jsonp",
+            // Work with the response
+            success: function (response) {
+                // server response
+                if (response === 'success') {
+                    amount.innerText = amount.innerText - 1
+                } else {
 
+                }
             }
-        }
-        //script的source就是请求的路径
-        script.src = 'http://jack.com:8082/pay?callback' + functionName
-        //script创建请求必须放在页面中，这样浏览器就会发起一个get请i去（没有办法创建post请求）
-        document.body.appendChild(script)
-        script.onload = function (e) {
-            //不管有没有成功都要删掉script
-            e.currentTarget.remove()
-            //不管成功与否都要把这个函数删除掉
-            delete window[functionName]
-        }
-        script.onerror = function (e) {
-            alert('fail')
-            e.currentTarget.remove()
-            delete window[functionName]
-        }
-
-
-        //用动态img创建一个get请求法
-        //let image = document.createElement('img')
-        //image.src = '/pay'
-        //image.onload = function(){ 
-        //alert('打钱成功')
-        //amount.innerText = amount.innerText - 1
-        //}
-        //image.onerror = function(){
-        //alert('打钱失败')
-        //}
+        });
     })
 </script>
-
-
-
